@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Polytron Fox 350 Charge Estimator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Fox 350">
+    <meta name="theme-color" content="#1e40af">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;500;600;700;800&display=swap');
+        
+        :root {
+            --primary-accent: #2563eb;
+            --accent-glow: rgba(37, 99, 235, 0.4);
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            background-color: #f8fafc;
+            overflow-x: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* Mode Gelap CSS */
+        body.dark-mode {
+            background-color: #0f172a;
+            color: #f8fafc;
+            --primary-accent: #fbbf24; /* Amber 400 */
+            --accent-glow: rgba(251, 191, 36, 0.4);
+        }
+
+        .dark-mode .glass-card {
+            background: rgba(15, 23, 42, 0.8);
+            border-color: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+        }
+
+        .dark-mode .bg-white { background-color: #1e293b; border-color: #334155; }
+        .dark-mode .text-slate-800 { color: #f1f5f9; }
+        .dark-mode .text-slate-900 { color: #f8fafc; }
+        .dark-mode .text-slate-400 { color: #94a3b8; }
+        .dark-mode .bg-slate-50 { background-color: #0f172a; }
+        
+        /* Aksen Amber Dinamis */
+        .dark-mode .bg-blue-50 { background-color: rgba(251, 191, 36, 0.1); border-color: rgba(251, 191, 36, 0.2); }
+        .dark-mode .text-blue-700 { color: #fbbf24; }
+        .dark-mode .text-blue-600 { color: #fbbf24; }
+        .dark-mode .text-blue-500 { color: #fcd34d; }
+        .dark-mode .text-blue-300 { color: rgba(251, 191, 36, 0.6); }
+        .dark-mode .bg-blue-100 { background-color: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+        .dark-mode .border-blue-100 { border-color: rgba(251, 191, 36, 0.3); }
+
+        /* Border Tetap Baterai Sekarang */
+        .input-field-border {
+            border: 1px solid #e2e8f0;
+        }
+        .dark-mode .input-field-border {
+            border: 1px solid #334155;
+        }
+        .input-field-border:focus-within {
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 0 2px var(--accent-glow);
+        }
+
+        .dark-mode nav { 
+            background: rgba(15, 23, 42, 0.9); 
+            border-top-color: #1e293b; 
+        }
+
+        .dark-mode #confirmBtn {
+            background-color: #fbbf24;
+            color: #0f172a;
+            box-shadow: 0 10px 25px -5px rgba(251, 191, 36, 0.3);
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            position: relative;
+            z-index: 10;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            transition: all 0.5s ease;
+        }
+
+        .dark-mode .gradient-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        @keyframes electric-flow {
+            0% { transform: translateX(-100%) skewX(-15deg); opacity: 0; }
+            50% { opacity: 0.5; }
+            100% { transform: translateX(200%) skewX(-15deg); opacity: 0; }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { filter: drop-shadow(0 0 5px var(--accent-glow)); }
+            50% { filter: drop-shadow(0 0 20px var(--primary-accent)); }
+        }
+
+        .electric-line {
+            position: absolute;
+            height: 2px;
+            width: 100%;
+            background: linear-gradient(90deg, transparent, var(--primary-accent), transparent);
+            animation: electric-flow 3s infinite linear;
+        }
+
+        .active-glow {
+            animation: pulse-glow 2s infinite ease-in-out;
+        }
+
+        input[type=range] {
+            height: 6px;
+            -webkit-appearance: none;
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+
+        .dark-mode input[type=range] { background: #334155; }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 22px;
+            width: 22px;
+            border-radius: 50%;
+            background: var(--primary-accent);
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--accent-glow);
+            border: 2px solid white;
+        }
+
+        .hidden-result {
+            max-height: 0;
+            opacity: 0;
+            transform: translateY(20px);
+            overflow: hidden;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .show-result {
+            max-height: 600px;
+            opacity: 1;
+            transform: translateY(0);
+            padding-bottom: 20px;
+        }
+
+        .page-content { display: none; }
+        .active-page { display: block; }
+
+        /* PERBAIKAN FINAL POSISI IKON DROPDOWN TANGGAL */
+        input[type="date"] { 
+            position: relative; 
+            padding-right: 52px !important; 
+            outline: none !important;
+            box-shadow: none !important;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .dark-mode input[type="date"] {
+            border: 1px solid #334155;
+        }
+
+        input[type="date"]:focus {
+            border-color: var(--primary-accent) !important;
+            box-shadow: 0 0 0 2px var(--accent-glow) !important;
+        }
+        
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            background-color: transparent;
+            cursor: pointer;
+            position: absolute;
+            right: 22px; /* Posisi proporsional sesuai request */
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 2;
+            opacity: 0.7;
+            width: 20px;
+            height: 20px;
+        }
+        .dark-mode input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); }
+
+        .filter-section {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.4s ease-in-out;
+        }
+
+        .filter-section.active {
+            max-height: 120px;
+            opacity: 1;
+            margin-bottom: 1.25rem;
+        }
+
+        #confirmModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(8px);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body class="max-w-md mx-auto min-h-screen flex flex-col relative pb-24">
+
+    <!-- Background Decor -->
+    <div class="fixed inset-0 pointer-events-none opacity-10">
+        <div class="electric-line" style="top: 20%; animation-delay: 0s;"></div>
+        <div class="electric-line" style="top: 70%; animation-delay: 1.5s;"></div>
+    </div>
+
+    <header class="gradient-bg text-white px-6 pt-10 pb-16 rounded-b-[40px] shadow-2xl relative overflow-hidden">
+        <div class="relative z-10 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-extrabold tracking-tight">Polytron Fox 350</h1>
+                <p class="text-blue-200 text-sm opacity-80 font-medium" data-i18n="subtitle">Smart Charging Estimator</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <button id="langToggle" class="text-xs font-bold transition-all text-white/80 hover:text-white px-1">EN</button>
+                <div id="statusIcon" class="bg-blue-500/30 p-3 rounded-2xl backdrop-blur-md transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-400 fill-yellow-400"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                </div>
+            </div>
+        </div>
+        <div class="absolute -right-10 -top-10 w-40 h-40 bg-blue-400/20 rounded-full blur-3xl"></div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="page-charging" class="page-content active-page px-5 -mt-10 space-y-6 relative z-10">
+        <div class="glass-card p-6 rounded-[32px] shadow-xl border border-white space-y-6">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block text-center" data-i18n="labelCurrent">Baterai Sekarang</label>
+                    <div class="relative">
+                        <input type="number" id="currentBattery" value="58" class="w-full bg-slate-50 dark:bg-slate-900 input-field-border rounded-2xl text-3xl font-bold py-4 text-center transition-all outline-none">
+                        <span class="absolute right-4 bottom-5 text-slate-300 font-bold">%</span>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block text-center" data-i18n="labelTarget">Target Baterai</label>
+                    <div class="relative">
+                        <input type="number" id="targetBattery" value="85" class="w-full bg-blue-50 text-blue-700 border-none rounded-2xl text-3xl font-bold py-4 text-center focus:ring-2 focus:ring-blue-500 transition-all outline-none">
+                        <span class="absolute right-4 bottom-5 text-blue-300 font-bold">%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-3 pt-2">
+                <div class="flex justify-between items-center px-1">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        <span data-i18n="labelSpeed">Kecepatan Cas</span>: <span id="rateLabel" class="text-blue-600">3.0</span> <span data-i18n="minsPerPct">Menit / 1%</span>
+                    </label>
+                </div>
+                <input type="range" id="rateSlider" min="1" max="10" step="0.1" value="3" class="w-full">
+            </div>
+
+            <button id="confirmBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-200 transition-all active:scale-95 flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                <span id="confirmBtnText" data-i18n="btnStart">Mulai Estimasi</span>
+            </button>
+        </div>
+
+        <div id="resultContainer" class="hidden-result space-y-6">
+            <div class="bg-white p-8 rounded-[32px] shadow-lg border border-slate-100 text-center space-y-6 relative overflow-hidden">
+                <div class="py-2 flex flex-col items-center">
+                    <h2 class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.25em] mb-1" data-i18n="resultTitle">Smart Plug Timer</h2>
+                    <div class="flex flex-col items-center mb-4">
+                        <span id="totalMinsDisplay" class="text-8xl font-black text-slate-900 dark:text-white tracking-tight leading-none">--</span>
+                        <span class="text-sm font-medium text-blue-500 uppercase tracking-[0.4em] mt-2" data-i18n="unitMinutes">menit</span>
+                    </div>
+                    <div id="durationDisplay" class="text-blue-500 font-bold text-[10px] uppercase tracking-[0.2em] bg-blue-50 py-1.5 px-5 rounded-full border border-blue-100">--</div>
+                </div>
+                <div class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-100/50">
+                    <div class="text-left">
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest" data-i18n="start">Mulai</p>
+                        <p id="startTime" class="font-bold text-slate-700 dark:text-slate-200">--:--</p>
+                    </div>
+                    <div class="text-blue-200 dark:text-amber-400/40"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-pulse"><path d="m9 18 6-6-6-6"/></svg></div>
+                    <div class="text-right">
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest" data-i18n="finish">Selesai</p>
+                        <p id="endTime" class="font-bold text-blue-600 text-lg">--:--</p>
+                    </div>
+                </div>
+                <button id="editBtn" class="text-slate-300 text-[9px] font-bold uppercase tracking-widest flex items-center justify-center gap-1.5 mx-auto hover:text-blue-500 transition-colors pt-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                    <span data-i18n="btnEdit">Ubah Data Input</span>
+                </button>
+            </div>
+            <div class="bg-blue-50 border border-blue-100 p-6 rounded-[32px] flex flex-col items-center text-center">
+                <p class="text-[11px] text-blue-800 dark:text-amber-200 font-medium leading-relaxed max-w-[240px]" data-i18n="instruction">Masukkan menit ke Smart Plug Anda.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- History Page -->
+    <main id="page-history" class="page-content px-5 -mt-10 space-y-6 relative z-10">
+        <div class="glass-card p-6 rounded-[32px] shadow-xl border border-white min-h-[450px] flex flex-col">
+            <div class="flex justify-between items-center mb-4 px-1">
+                <h2 class="text-lg font-bold text-slate-800" data-i18n="navHistory">Riwayat</h2>
+                <button id="toggleFilterBtn" class="text-slate-400 hover:text-blue-600 transition-colors p-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </button>
+            </div>
+            <div id="filterSection" class="filter-section space-y-2">
+                <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest px-1" data-i18n="filterDate">Filter Tanggal</label>
+                <div class="relative flex items-center">
+                    <input type="date" id="historyDateFilter" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl pl-4 pr-12 py-3 text-xs text-slate-600 dark:text-slate-300 outline-none focus:ring-0 transition-all font-semibold">
+                </div>
+            </div>
+            <div id="historyList" class="space-y-4 flex-grow overflow-y-auto pr-1 mb-4">
+                <div class="text-center py-10 text-slate-400 text-xs italic" data-i18n="noHistory">Belum ada riwayat</div>
+            </div>
+            <div id="historyFooter" class="pt-4 border-t border-slate-50 dark:border-slate-800 flex justify-center hidden">
+                <button id="triggerClearBtn" class="text-slate-400 hover:text-blue-600 transition-all py-2.5 px-6 rounded-full group">
+                    <span class="text-[10px] font-bold uppercase tracking-[0.2em]" data-i18n="clearHistory">Hapus Semua</span>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Settings Page -->
+    <main id="page-settings" class="page-content px-5 -mt-10 space-y-6 relative z-10">
+        <div class="glass-card p-6 rounded-[32px] shadow-xl border border-white space-y-8">
+            <h2 class="text-lg font-bold text-slate-800 px-1" data-i18n="navSettings">Setelan</h2>
+            <div class="flex items-center justify-between px-1">
+                <p class="text-xs font-bold text-slate-800" data-i18n="setDark">Mode Gelap</p>
+                <button id="darkToggle" class="w-12 h-6 bg-slate-200 dark:bg-amber-400 rounded-full relative transition-all">
+                    <div id="darkKnob" class="absolute top-1 left-1 w-4 h-4 bg-white dark:bg-slate-900 rounded-full transition-all"></div>
+                </button>
+            </div>
+            <div class="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-3xl">
+                <p class="text-[10px] text-slate-400">Versi 1.3.0 (PWA Ready)</p>
+            </div>
+        </div>
+    </main>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-100 px-10 py-4 flex justify-between items-center max-w-md mx-auto z-50 rounded-t-[24px]">
+        <button onclick="showPage('charging')" id="nav-btn-charging" class="flex flex-col items-center gap-1 text-blue-600 nav-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            <span class="text-[9px] font-black uppercase tracking-tighter" data-i18n="navCharging">Cas</span>
+        </button>
+        <button onclick="showPage('history')" id="nav-btn-history" class="flex flex-col items-center gap-1 text-slate-300 nav-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+            <span class="text-[9px] font-bold uppercase tracking-tighter" data-i18n="navHistory">Riwayat</span>
+        </button>
+        <button onclick="showPage('settings')" id="nav-btn-settings" class="flex flex-col items-center gap-1 text-slate-300 nav-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span class="text-[9px] font-bold uppercase tracking-tighter" data-i18n="navSettings">Opsi</span>
+        </button>
+    </nav>
+
+    <script>
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then(reg => {
+                    console.log('SW Registered!');
+                }).catch(err => {
+                    console.log('SW Registration failed: ', err);
+                });
+            });
+        }
+
+        // --- SCRIPT UTAMA ---
+        const currentInput = document.getElementById('currentBattery');
+        const targetInput = document.getElementById('targetBattery');
+        const rateSlider = document.getElementById('rateSlider');
+        const rateLabel = document.getElementById('rateLabel');
+        const durationDisplay = document.getElementById('durationDisplay');
+        const totalMinsDisplay = document.getElementById('totalMinsDisplay');
+        const startTimeDisplay = document.getElementById('startTime');
+        const endTimeDisplay = document.getElementById('endTime');
+        const confirmBtn = document.getElementById('confirmBtn');
+        const confirmBtnText = document.getElementById('confirmBtnText');
+        const editBtn = document.getElementById('editBtn');
+        const resultContainer = document.getElementById('resultContainer');
+        const statusIcon = document.getElementById('statusIcon');
+        const langToggle = document.getElementById('langToggle');
+        const historyList = document.getElementById('historyList');
+        const historyFooter = document.getElementById('historyFooter');
+        const toggleFilterBtn = document.getElementById('toggleFilterBtn');
+        const filterSection = document.getElementById('filterSection');
+        const historyDateFilter = document.getElementById('historyDateFilter');
+        const darkToggle = document.getElementById('darkToggle');
+        const darkKnob = document.getElementById('darkKnob');
+
+        let isCalculated = false;
+        let currentLang = 'EN';
+        let historyData = JSON.parse(localStorage.getItem('fox350_history')) || [];
+        let config = JSON.parse(localStorage.getItem('fox350_config')) || { defRate: 3.0, darkMode: false };
+
+        const translations = {
+            EN: { subtitle: "Smart Charging Estimator", labelCurrent: "Current Battery", labelTarget: "Target Battery", labelSpeed: "Charge Speed", minsPerPct: "Mins / 1%", btnStart: "Start Estimation", btnUpdate: "Update Estimation", resultTitle: "Smart Plug Timer", unitMinutes: "minutes", start: "Start", finish: "Finish", btnEdit: "Edit Input Data", instruction: "Input the minutes above into your Smart Plug.", navCharging: "Charging", navHistory: "History", navSettings: "Settings", clearHistory: "Clear All", noHistory: "No history yet", chargedTo: "Charged to", filterDate: "Filter by Date", setDark: "Dark Mode" },
+            ID: { subtitle: "Smart Charging Estimator", labelCurrent: "Baterai Sekarang", labelTarget: "Target Baterai", labelSpeed: "Kecepatan Cas", minsPerPct: "Menit / 1%", btnStart: "Mulai Estimasi", btnUpdate: "Perbarui Estimasi", resultTitle: "Timer Smart Plug", unitMinutes: "menit", start: "Mulai", finish: "Selesai", btnEdit: "Ubah Data Input", instruction: "Masukkan angka menit di atas ke Smart Plug.", navCharging: "Cas", navHistory: "Riwayat", navSettings: "Opsi", clearHistory: "Hapus Semua", noHistory: "Belum ada riwayat", chargedTo: "Cas hingga", filterDate: "Filter Tanggal", setDark: "Mode Gelap" }
+        };
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active-page'));
+            document.getElementById('page-' + pageId).classList.add('active-page');
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-blue-600');
+                btn.classList.add('text-slate-300');
+            });
+            const activeBtn = document.getElementById('nav-btn-' + pageId);
+            activeBtn.classList.add('text-blue-600');
+            activeBtn.classList.remove('text-slate-300');
+            if (pageId === 'history') renderHistory();
+        }
+
+        function calculateAndDisplay(save = true) {
+            const current = parseInt(currentInput.value) || 0;
+            const target = parseInt(targetInput.value) || 0;
+            const rate = parseFloat(rateSlider.value);
+            const diff = target - current;
+            const now = new Date();
+
+            if (diff > 0) {
+                const totalMins = Math.round(diff * rate);
+                const finishDate = new Date(now.getTime() + totalMins * 60000);
+                totalMinsDisplay.innerText = totalMins;
+                durationDisplay.innerText = totalMins + " " + (currentLang === 'EN' ? 'mins' : 'menit');
+                startTimeDisplay.innerText = formatTime(now);
+                endTimeDisplay.innerText = formatTime(finishDate);
+                resultContainer.classList.add('show-result');
+                confirmBtnText.innerText = translations[currentLang].btnUpdate;
+                isCalculated = true;
+                if (save) {
+                    const isoDate = now.toISOString().split('T')[0];
+                    const timestamp = `${now.getDate()} ${now.getMonth()+1} ${now.getFullYear()}, ${formatTime(now)}`;
+                    historyData.unshift({ timestamp, isoDate, start: startTimeDisplay.innerText, end: endTimeDisplay.innerText, duration: totalMins, from: current, to: target, speed: rate });
+                    localStorage.setItem('fox350_history', JSON.stringify(historyData));
+                }
+            }
+        }
+
+        function renderHistory() {
+            const filterValue = historyDateFilter.value;
+            let displayData = filterValue ? historyData.filter(item => item.isoDate === filterValue) : historyData.slice(0, 5);
+            historyList.innerHTML = displayData.length === 0 ? `<div class="text-center py-10 text-slate-400 text-xs italic">${translations[currentLang].noHistory}</div>` : 
+            displayData.map(item => `
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 dark:bg-slate-900/50 dark:border-slate-800 flex flex-col gap-2">
+                    <div class="flex justify-between items-center"><span class="text-[10px] font-bold text-slate-400 uppercase">${item.timestamp}</span><div class="bg-blue-100 text-blue-600 dark:bg-amber-400/20 dark:text-amber-400 px-2 py-0.5 rounded-full text-[9px] font-bold">${item.duration} MINS</div></div>
+                    <div class="flex items-center justify-between"><div><div class="text-xs font-bold dark:text-slate-300">${translations[currentLang].chargedTo} ${item.to}%</div><div class="text-[10px] text-slate-400">${item.from}% → ${item.to}%</div></div><div class="text-sm font-black text-blue-600 dark:text-amber-400">${item.start} - ${item.end}</div></div>
+                </div>
+            `).join('');
+        }
+
+        function formatTime(date) { return date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0'); }
+        function applyTheme() {
+            document.body.classList.toggle('dark-mode', config.darkMode);
+            darkKnob.style.transform = config.darkMode ? 'translateX(24px)' : 'translateX(0)';
+            darkToggle.classList.toggle('bg-amber-400', config.darkMode);
+        }
+
+        confirmBtn.addEventListener('click', () => calculateAndDisplay(true));
+        darkToggle.addEventListener('click', () => { config.darkMode = !config.darkMode; applyTheme(); localStorage.setItem('fox350_config', JSON.stringify(config)); });
+        toggleFilterBtn.addEventListener('click', () => filterSection.classList.toggle('active'));
+        historyDateFilter.addEventListener('change', renderHistory);
+        
+        applyTheme();
+    </script>
+</body>
+</html>
+
+```
