@@ -36,6 +36,56 @@
             --accent-glow: rgba(251, 191, 36, 0.4);
         }
 
+        /* --- SPLASH SCREEN STYLES --- */
+        #splash-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease, visibility 0.8s;
+        }
+
+        #splash-screen.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .splash-logo {
+            filter: drop-shadow(0 0 20px rgba(251, 191, 36, 0.6));
+            animation: splash-pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes splash-pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.2); opacity: 1; }
+        }
+
+        .loading-bar-container {
+            width: 140px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-top: 30px;
+            overflow: hidden;
+        }
+
+        .loading-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: #fbbf24;
+            border-radius: 10px;
+            animation: loading-fill 2s forwards ease-in-out;
+        }
+
+        @keyframes loading-fill {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
         .dark-mode .glass-card {
             background: rgba(15, 23, 42, 0.8);
             border-color: rgba(255, 255, 255, 0.05);
@@ -48,7 +98,7 @@
         .dark-mode .text-slate-400 { color: #94a3b8; }
         .dark-mode .bg-slate-50 { background-color: #0f172a; }
         
-        /* Fix untuk warna jam Mulai di Dark Mode agar Putih */
+        /* Jam Mulai Putih di Dark Mode */
         .dark-mode #startTime { color: #ffffff !important; }
         
         .dark-mode .bg-blue-50 { background-color: rgba(251, 191, 36, 0.1); border-color: rgba(251, 191, 36, 0.2); }
@@ -95,7 +145,6 @@
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
         }
 
-        /* ANIMASI IKON PETIR DINAMIS */
         @keyframes bolt-pulse {
             0%, 100% { 
                 transform: scale(1); 
@@ -112,7 +161,6 @@
             transform-origin: center;
         }
 
-        /* IKON CHEVRON BIRU & POSISI TANGGAL */
         input[type="date"] { 
             position: relative; 
             padding-right: 50px !important; 
@@ -184,6 +232,18 @@
 </head>
 <body class="max-w-md mx-auto min-h-screen flex flex-col relative pb-24">
 
+    <!-- SPLASH SCREEN SECTION -->
+    <div id="splash-screen">
+        <div class="splash-logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-400 fill-yellow-400"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <h2 class="text-white text-2xl font-extrabold mt-6 tracking-tight">Polytron Fox 350</h2>
+        <p class="text-blue-300 text-xs font-medium uppercase tracking-[0.3em] mt-2">Estimator</p>
+        <div class="loading-bar-container">
+            <div class="loading-bar-fill"></div>
+        </div>
+    </div>
+
     <header class="gradient-bg text-white px-6 pt-10 pb-16 rounded-b-[40px] shadow-2xl relative overflow-hidden">
         <div class="relative z-10 flex justify-between items-center">
             <div>
@@ -242,8 +302,9 @@
                         <span id="totalMinsDisplay" class="text-8xl font-black text-slate-900 dark:text-white tracking-tight leading-none">--</span>
                         <span class="text-sm font-medium text-blue-500 uppercase tracking-[0.4em] mt-2" data-i18n="unitMinutes">minutes</span>
                         
+                        <!-- PILL ESTIMASI JAM & MENIT (DESAIN CLEAN TERBARU) -->
                         <div class="mt-3 flex justify-center">
-                            <div id="hoursMinsDisplay" class="bg-blue-50 text-blue-700 border border-blue-100 dark:bg-amber-400 dark:text-slate-900 dark:border-transparent text-[10px] px-4 py-1.5 rounded-full font-normal transition-all"></div>
+                            <div id="hoursMinsDisplay" class="bg-blue-100 text-blue-600 dark:bg-amber-400/20 dark:text-amber-400 text-[10px] px-4 py-1.5 rounded-full font-semibold transition-all"></div>
                         </div>
                     </div>
                 </div>
@@ -326,7 +387,7 @@
                         <div class="w-10 h-10 bg-blue-600 dark:bg-amber-400 rounded-xl flex items-center justify-center text-white dark:text-slate-900 font-black">P</div>
                         <div>
                             <p class="text-xs font-bold text-slate-800 dark:text-slate-200">Polytron Fox 350 Estimator</p>
-                            <p class="text-[10px] text-slate-400">Version 1.4.2 (Updated Contrast)</p>
+                            <p class="text-[10px] text-slate-400">Version 1.4.4 (Icon & Alignment Update)</p>
                         </div>
                     </div>
                     <div class="space-y-2 border-t border-slate-200/50 dark:border-slate-800 pt-3">
@@ -346,7 +407,8 @@
             <span class="text-[9px] font-black uppercase tracking-tighter" data-i18n="navCharging">Dashboard</span>
         </button>
         <button onclick="showPage('history')" id="nav-btn-history" class="flex flex-col items-center gap-1 text-slate-300 nav-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+            <!-- IKON HISTORY BARU (CLOCK-ARROW) UNTUK SIMETRI VISUAL -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
             <span class="text-[9px] font-bold uppercase tracking-tighter" data-i18n="navHistory">History</span>
         </button>
         <button onclick="showPage('settings')" id="nav-btn-settings" class="flex flex-col items-center gap-1 text-slate-300 nav-btn">
@@ -355,7 +417,6 @@
         </button>
     </nav>
 
-    <!-- Modal Konfirmasi Hapus -->
     <div id="confirmModal">
         <div class="bg-white dark:bg-slate-900 rounded-[32px] p-8 w-full max-w-[320px] shadow-2xl text-center space-y-6">
             <h3 class="text-slate-800 dark:text-white font-bold" data-i18n="modalTitle">Clear History?</h3>
@@ -367,6 +428,15 @@
     </div>
 
     <script>
+        // Splash Screen Logic
+        window.addEventListener('load', function() {
+            const splash = document.getElementById('splash-screen');
+            setTimeout(() => {
+                splash.classList.add('fade-out');
+                setTimeout(() => { splash.style.display = 'none'; }, 800);
+            }, 2500);
+        });
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js').catch(err => console.log('SW fail: ', err));
@@ -405,62 +475,8 @@
         let config = JSON.parse(localStorage.getItem('fox350_config')) || { defRate: 3.0, darkMode: false };
 
         const translations = {
-            EN: {
-                navCharging: "Dashboard",
-                navHistory: "History",
-                navSettings: "Settings",
-                subtitle: "Smart Charging Estimator",
-                labelCurrent: "Current Battery",
-                labelTarget: "Target Battery",
-                labelSpeed: "Charge Speed",
-                minsPerPct: "Mins / 1%",
-                btnStart: "Start Estimation",
-                btnUpdate: "Update Estimation",
-                resultTitle: "Smart Plug Timer",
-                unitMinutes: "minutes",
-                start: "Start",
-                finish: "Finish",
-                noHistory: "No history yet",
-                chargedTo: "Charged to",
-                filterDate: "Filter by Date",
-                setDark: "Dark Mode",
-                clearHistory: "Clear All",
-                modalTitle: "Clear All History?",
-                modalYes: "Yes, Clear",
-                modalNo: "Cancel",
-                setDefRate: "Default Charge Rate",
-                setAbout: "About App",
-                setCredits: "Credits & Development:",
-                estLabel: "Estimated Time"
-            },
-            ID: {
-                navCharging: "Dashboard",
-                navHistory: "Riwayat",
-                navSettings: "Opsi",
-                subtitle: "Smart Charging Estimator",
-                labelCurrent: "Baterai Sekarang",
-                labelTarget: "Target Baterai",
-                labelSpeed: "Kecepatan Cas",
-                minsPerPct: "Menit / 1%",
-                btnStart: "Mulai Estimasi",
-                btnUpdate: "Perbarui Estimasi",
-                resultTitle: "Timer Smart Plug",
-                unitMinutes: "menit",
-                start: "Mulai",
-                finish: "Selesai",
-                noHistory: "Belum ada riwayat",
-                chargedTo: "Cas hingga",
-                filterDate: "Filter Tanggal",
-                setDark: "Mode Gelap",
-                clearHistory: "Hapus Semua",
-                modalTitle: "Hapus Semua Riwayat?",
-                modalYes: "Ya, Hapus",
-                modalNo: "Batal",
-                setDefRate: "Laju Cas Standar",
-                setAbout: "Tentang Aplikasi",
-                setCredits: "Kredit & Pengembangan:",
-                estLabel: "Estimasi Waktu"
-            }
+            EN: { navCharging: "Dashboard", navHistory: "History", navSettings: "Settings", subtitle: "Smart Charging Estimator", labelCurrent: "Current Battery", labelTarget: "Target Battery", labelSpeed: "Charge Speed", minsPerPct: "Mins / 1%", btnStart: "Start Estimation", btnUpdate: "Update Estimation", resultTitle: "Smart Plug Timer", unitMinutes: "minutes", start: "Start", finish: "Finish", noHistory: "No history yet", chargedTo: "Charged to", filterDate: "Filter by Date", setDark: "Dark Mode", clearHistory: "Clear All", modalTitle: "Clear All History?", modalYes: "Yes, Clear", modalNo: "Cancel", setDefRate: "Default Charge Rate", setAbout: "About App", setCredits: "Credits & Development:", estLabel: "Estimated Time" },
+            ID: { navCharging: "Dashboard", navHistory: "Riwayat", navSettings: "Opsi", subtitle: "Smart Charging Estimator", labelCurrent: "Baterai Sekarang", labelTarget: "Target Baterai", labelSpeed: "Kecepatan Cas", minsPerPct: "Menit / 1%", btnStart: "Mulai Estimasi", btnUpdate: "Perbarui Estimasi", resultTitle: "Timer Smart Plug", unitMinutes: "menit", start: "Mulai", finish: "Selesai", noHistory: "Belum ada riwayat", chargedTo: "Cas hingga", filterDate: "Filter Tanggal", setDark: "Mode Gelap", clearHistory: "Hapus Semua", modalTitle: "Hapus Semua Riwayat?", modalYes: "Ya, Hapus", modalNo: "Batal", setDefRate: "Laju Cas Standar", setAbout: "Tentang Aplikasi", setCredits: "Kredit & Pengembangan:", estLabel: "Estimasi Waktu" }
         };
 
         function switchLanguage() {
@@ -475,9 +491,7 @@
         function updateUIStrings() {
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
-                if (translations[currentLang][key]) {
-                    el.innerText = translations[currentLang][key];
-                }
+                if (translations[currentLang][key]) el.innerText = translations[currentLang][key];
             });
             const activePage = document.querySelector('.page-content.active-page').id;
             if (activePage === 'page-charging') pageTitleText.innerText = translations[currentLang].subtitle;
@@ -509,21 +523,17 @@
             if (diff > 0) {
                 const totalMins = Math.round(diff * rate);
                 const finishDate = new Date(now.getTime() + totalMins * 60000);
-                
                 totalMinsDisplay.innerText = totalMins;
                 startTimeDisplay.innerText = formatTime(now);
                 endTimeDisplay.innerText = formatTime(finishDate);
-
                 const hours = Math.floor(totalMins / 60);
                 const remainingMins = totalMins % 60;
                 const hLabel = currentLang === 'ID' ? 'Jam' : 'Hr';
                 const mLabel = currentLang === 'ID' ? 'Menit' : 'Min';
-                
                 let timeStr = `${translations[currentLang].estLabel}: `;
                 if (hours > 0) timeStr += `${hours} ${hLabel} `;
                 timeStr += `${remainingMins} ${mLabel}`;
                 hoursMinsDisplay.innerText = timeStr;
-
                 resultContainer.classList.add('show-result');
                 confirmBtnText.innerText = translations[currentLang].btnUpdate;
                 isCalculated = true;
