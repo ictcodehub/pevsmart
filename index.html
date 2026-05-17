@@ -279,13 +279,18 @@
                 </div>
             </div>
 
-            <div class="space-y-3 pt-2">
+            <div class="space-y-4 pt-2">
                 <div class="flex justify-between items-center px-1">
                     <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                        <span data-i18n="labelSpeed">Charge Speed</span>: <span id="rateLabel" class="text-blue-600">3.0</span> <span data-i18n="minsPerPct">Mins / 1%</span>
+                        <span data-i18n="labelSpeed">Charge Speed</span>: <span id="rateLabel" class="text-blue-600 font-black text-sm ml-1">3.0</span> <span data-i18n="minsPerPct" class="ml-1">Mins / 1%</span>
                     </label>
                 </div>
-                <input type="range" id="rateSlider" min="1" max="10" step="0.1" value="3" class="w-full">
+                <!-- SLIDER DENGAN TOMBOL +/- UNTUK PRESISI DESIMAL -->
+                <div class="flex items-center gap-3 bg-slate-50 dark:bg-slate-900 p-2.5 rounded-2xl border border-slate-100 dark:border-slate-800">
+                    <button id="rateMinus" class="w-10 h-10 flex-shrink-0 bg-white dark:bg-slate-800 text-blue-600 dark:text-amber-400 shadow-sm border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center text-xl font-bold active:scale-95 transition-all">-</button>
+                    <input type="range" id="rateSlider" min="1" max="10" step="0.1" value="3" class="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700">
+                    <button id="ratePlus" class="w-10 h-10 flex-shrink-0 bg-white dark:bg-slate-800 text-blue-600 dark:text-amber-400 shadow-sm border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center text-xl font-bold active:scale-95 transition-all">+</button>
+                </div>
             </div>
 
             <button id="confirmBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
@@ -297,15 +302,23 @@
         <div id="resultContainer" class="hidden-result space-y-6">
             <div class="bg-white dark:bg-slate-800 p-8 rounded-[32px] shadow-lg border border-slate-100 dark:border-slate-700 text-center space-y-6 relative overflow-hidden">
                 <div class="py-2 flex flex-col items-center">
-                    <h2 class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.25em] mb-1" data-i18n="resultTitle">Smart Plug Timer</h2>
-                    <div class="flex flex-col items-center mb-4">
-                        <span id="totalMinsDisplay" class="text-8xl font-black text-slate-900 dark:text-white tracking-tight leading-none">--</span>
-                        <span class="text-sm font-medium text-blue-500 uppercase tracking-[0.4em] mt-2" data-i18n="unitMinutes">minutes</span>
+                    <h2 class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.25em] mb-4" data-i18n="resultTitle">Smart Plug Timer</h2>
+                    <div class="flex flex-col items-center mb-4 w-full">
                         
-                        <!-- PILL ESTIMASI JAM & MENIT (DESAIN CLEAN TERBARU) -->
-                        <div class="mt-3 flex justify-center">
-                            <div id="hoursMinsDisplay" class="bg-blue-100 text-blue-600 dark:bg-amber-400/20 dark:text-amber-400 text-[10px] px-4 py-1.5 rounded-full font-semibold transition-all"></div>
+                        <!-- DURASI JAM & MENIT (DI ATAS SEKARANG) -->
+                        <div id="hoursMinsDisplay" class="text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-none text-center flex items-baseline justify-center">
+                            --
                         </div>
+                        
+                        <!-- PILL TOTAL MENIT (DI BAWAH) -->
+                        <div class="mt-5 flex justify-center">
+                            <div class="bg-blue-100 text-blue-600 dark:bg-amber-400/20 dark:text-amber-400 text-[10px] px-4 py-1.5 rounded-full font-bold transition-all uppercase tracking-wide flex items-center gap-1">
+                                <span data-i18n="totalLabel">Total:</span>
+                                <span id="totalMinsDisplay" class="mx-0.5">--</span>
+                                <span data-i18n="unitMinutes">minutes</span>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
                 <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-900 p-4 rounded-2xl">
@@ -365,11 +378,16 @@
                         <p class="text-xs font-bold text-slate-800 dark:text-slate-200" data-i18n="setDefRate">Default Charge Rate</p>
                     </div>
                 </div>
-                <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-2xl space-y-3">
+                <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-2xl space-y-4">
                     <div class="flex justify-between items-center">
-                        <span id="defRateVal" class="text-blue-600 dark:text-amber-400 font-bold text-sm">3.0</span>
+                        <span id="defRateVal" class="text-blue-600 dark:text-amber-400 font-bold text-sm bg-white dark:bg-slate-800 px-4 py-1 rounded-full shadow-sm">3.0</span>
                     </div>
-                    <input type="range" id="defRateSlider" min="1" max="10" step="0.1" value="3" class="w-full">
+                    <!-- SLIDER SETTINGS DENGAN TOMBOL +/- -->
+                    <div class="flex items-center gap-3">
+                        <button id="defRateMinus" class="w-10 h-10 flex-shrink-0 bg-white dark:bg-slate-800 text-blue-600 dark:text-amber-400 shadow-sm border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center text-xl font-bold active:scale-95 transition-all">-</button>
+                        <input type="range" id="defRateSlider" min="1" max="10" step="0.1" value="3" class="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700">
+                        <button id="defRatePlus" class="w-10 h-10 flex-shrink-0 bg-white dark:bg-slate-800 text-blue-600 dark:text-amber-400 shadow-sm border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center text-xl font-bold active:scale-95 transition-all">+</button>
+                    </div>
                 </div>
             </div>
 
@@ -387,7 +405,7 @@
                         <div class="w-10 h-10 bg-blue-600 dark:bg-amber-400 rounded-xl flex items-center justify-center text-white dark:text-slate-900 font-black">P</div>
                         <div>
                             <p class="text-xs font-bold text-slate-800 dark:text-slate-200">Polytron Fox 350 Estimator</p>
-                            <p class="text-[10px] text-slate-400">Version 1.4.4 (Icon & Alignment Update)</p>
+                            <p class="text-[10px] text-slate-400">Version 1.6.0 (Layout Update)</p>
                         </div>
                     </div>
                     <div class="space-y-2 border-t border-slate-200/50 dark:border-slate-800 pt-3">
@@ -407,7 +425,6 @@
             <span class="text-[9px] font-black uppercase tracking-tighter" data-i18n="navCharging">Dashboard</span>
         </button>
         <button onclick="showPage('history')" id="nav-btn-history" class="flex flex-col items-center gap-1 text-slate-300 nav-btn">
-            <!-- IKON HISTORY BARU (CLOCK-ARROW) UNTUK SIMETRI VISUAL -->
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
             <span class="text-[9px] font-bold uppercase tracking-tighter" data-i18n="navHistory">History</span>
         </button>
@@ -470,20 +487,31 @@
         const defRateVal = document.getElementById('defRateVal');
 
         let isCalculated = false;
-        let currentLang = localStorage.getItem('fox350_lang') || 'EN';
+        let currentLang = localStorage.getItem('fox350_lang') || 'ID';
         let historyData = JSON.parse(localStorage.getItem('fox350_history')) || [];
         let config = JSON.parse(localStorage.getItem('fox350_config')) || { defRate: 3.0, darkMode: false };
 
         const translations = {
-            EN: { navCharging: "Dashboard", navHistory: "History", navSettings: "Settings", subtitle: "Smart Charging Estimator", labelCurrent: "Current Battery", labelTarget: "Target Battery", labelSpeed: "Charge Speed", minsPerPct: "Mins / 1%", btnStart: "Start Estimation", btnUpdate: "Update Estimation", resultTitle: "Smart Plug Timer", unitMinutes: "minutes", start: "Start", finish: "Finish", noHistory: "No history yet", chargedTo: "Charged to", filterDate: "Filter by Date", setDark: "Dark Mode", clearHistory: "Clear All", modalTitle: "Clear All History?", modalYes: "Yes, Clear", modalNo: "Cancel", setDefRate: "Default Charge Rate", setAbout: "About App", setCredits: "Credits & Development:", estLabel: "Estimated Time" },
-            ID: { navCharging: "Dashboard", navHistory: "Riwayat", navSettings: "Opsi", subtitle: "Smart Charging Estimator", labelCurrent: "Baterai Sekarang", labelTarget: "Target Baterai", labelSpeed: "Kecepatan Cas", minsPerPct: "Menit / 1%", btnStart: "Mulai Estimasi", btnUpdate: "Perbarui Estimasi", resultTitle: "Timer Smart Plug", unitMinutes: "menit", start: "Mulai", finish: "Selesai", noHistory: "Belum ada riwayat", chargedTo: "Cas hingga", filterDate: "Filter Tanggal", setDark: "Mode Gelap", clearHistory: "Hapus Semua", modalTitle: "Hapus Semua Riwayat?", modalYes: "Ya, Hapus", modalNo: "Batal", setDefRate: "Laju Cas Standar", setAbout: "Tentang Aplikasi", setCredits: "Kredit & Pengembangan:", estLabel: "Estimasi Waktu" }
+            EN: { navCharging: "Dashboard", navHistory: "History", navSettings: "Settings", subtitle: "Smart Charging Estimator", labelCurrent: "Current Battery", labelTarget: "Target Battery", labelSpeed: "Charge Speed", minsPerPct: "Mins / 1%", btnStart: "Start Estimation", btnUpdate: "Update Estimation", resultTitle: "Smart Plug Timer", unitMinutes: "minutes", start: "Start", finish: "Finish", noHistory: "No history yet", chargedTo: "Charged to", filterDate: "Filter by Date", setDark: "Dark Mode", clearHistory: "Clear All", modalTitle: "Clear All History?", modalYes: "Yes, Clear", modalNo: "Cancel", setDefRate: "Default Charge Rate", setAbout: "About App", setCredits: "Credits & Development:", estLabel: "Estimated Time", totalLabel: "Total:" },
+            ID: { navCharging: "Dashboard", navHistory: "Riwayat", navSettings: "Opsi", subtitle: "Smart Charging Estimator", labelCurrent: "Baterai Sekarang", labelTarget: "Target Baterai", labelSpeed: "Kecepatan Cas", minsPerPct: "Menit / 1%", btnStart: "Mulai Estimasi", btnUpdate: "Perbarui Estimasi", resultTitle: "Timer Smart Plug", unitMinutes: "menit", start: "Mulai", finish: "Selesai", noHistory: "Belum ada riwayat", chargedTo: "Cas hingga", filterDate: "Filter Tanggal", setDark: "Mode Gelap", clearHistory: "Hapus Semua", modalTitle: "Hapus Semua Riwayat?", modalYes: "Ya, Hapus", modalNo: "Batal", setDefRate: "Laju Cas Standar", setAbout: "Tentang Aplikasi", setCredits: "Kredit & Pengembangan:", estLabel: "Estimasi Waktu", totalLabel: "Total:" }
         };
+
+        function formatDecimal(val) {
+            const formatted = parseFloat(val).toFixed(1);
+            return currentLang === 'ID' ? formatted.replace('.', ',') : formatted;
+        }
+
+        function updateDisplays() {
+            rateLabel.innerText = formatDecimal(rateSlider.value);
+            defRateVal.innerText = formatDecimal(defRateSlider.value);
+        }
 
         function switchLanguage() {
             currentLang = currentLang === 'EN' ? 'ID' : 'EN';
             localStorage.setItem('fox350_lang', currentLang);
             langToggle.innerText = currentLang;
             updateUIStrings();
+            updateDisplays();
             renderHistory();
             if(isCalculated) calculateAndDisplay(false);
         }
@@ -520,23 +548,35 @@
             const rate = parseFloat(rateSlider.value);
             const diff = target - current;
             const now = new Date();
+            
             if (diff > 0) {
                 const totalMins = Math.round(diff * rate);
                 const finishDate = new Date(now.getTime() + totalMins * 60000);
+                
                 totalMinsDisplay.innerText = totalMins;
                 startTimeDisplay.innerText = formatTime(now);
                 endTimeDisplay.innerText = formatTime(finishDate);
+                
                 const hours = Math.floor(totalMins / 60);
                 const remainingMins = totalMins % 60;
+                
+                // Menentukan Label untuk Jam dan Menit (menggunakan huruf kapital kecil)
                 const hLabel = currentLang === 'ID' ? 'Jam' : 'Hr';
                 const mLabel = currentLang === 'ID' ? 'Menit' : 'Min';
-                let timeStr = `${translations[currentLang].estLabel}: `;
-                if (hours > 0) timeStr += `${hours} ${hLabel} `;
-                timeStr += `${remainingMins} ${mLabel}`;
-                hoursMinsDisplay.innerText = timeStr;
+                
+                // Menyusun Format HTML agar angka besar dan teks label sedikit lebih kecil
+                let timeStr = "";
+                if (hours > 0) {
+                    timeStr += `${hours}<span class="text-xl font-bold text-blue-400 dark:text-amber-500/80 ml-1.5 mr-3">${hLabel}</span>`;
+                }
+                timeStr += `${remainingMins}<span class="text-xl font-bold text-blue-400 dark:text-amber-500/80 ml-1.5">${mLabel}</span>`;
+                
+                hoursMinsDisplay.innerHTML = timeStr;
+                
                 resultContainer.classList.add('show-result');
                 confirmBtnText.innerText = translations[currentLang].btnUpdate;
                 isCalculated = true;
+                
                 if (save) {
                     const isoDate = now.toISOString().split('T')[0];
                     const timestamp = `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()}, ${formatTime(now)}`;
@@ -561,26 +601,44 @@
         }
 
         function formatTime(date) { return date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0'); }
+        
         function applyTheme() {
             document.body.classList.toggle('dark-mode', config.darkMode);
             darkKnob.style.transform = config.darkMode ? 'translateX(24px)' : 'translateX(0)';
             darkToggle.classList.toggle('bg-amber-400', config.darkMode);
         }
 
+        function adjustSlider(slider, amount) {
+            let val = parseFloat(slider.value) + amount;
+            val = Math.max(parseFloat(slider.min), Math.min(parseFloat(slider.max), val));
+            slider.value = val.toFixed(1);
+            slider.dispatchEvent(new Event('input')); 
+        }
+
+        document.getElementById('rateMinus').addEventListener('click', () => adjustSlider(rateSlider, -0.1));
+        document.getElementById('ratePlus').addEventListener('click', () => adjustSlider(rateSlider, 0.1));
+        document.getElementById('defRateMinus').addEventListener('click', () => adjustSlider(defRateSlider, -0.1));
+        document.getElementById('defRatePlus').addEventListener('click', () => adjustSlider(defRateSlider, 0.1));
+
+        rateSlider.addEventListener('input', () => {
+            rateLabel.innerText = formatDecimal(rateSlider.value);
+            if(isCalculated) calculateAndDisplay(false); 
+        });
+
+        defRateSlider.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            defRateVal.innerText = formatDecimal(val);
+            config.defRate = val;
+            rateSlider.value = val;
+            rateLabel.innerText = formatDecimal(val);
+            localStorage.setItem('fox350_config', JSON.stringify(config));
+        });
+
         confirmBtn.addEventListener('click', () => calculateAndDisplay(true));
         langToggle.addEventListener('click', switchLanguage);
         darkToggle.addEventListener('click', () => { config.darkMode = !config.darkMode; applyTheme(); localStorage.setItem('fox350_config', JSON.stringify(config)); });
-        defRateSlider.addEventListener('input', (e) => {
-            const val = parseFloat(e.target.value);
-            defRateVal.innerText = val.toFixed(1);
-            config.defRate = val;
-            rateSlider.value = val;
-            rateLabel.innerText = val.toFixed(1);
-            localStorage.setItem('fox350_config', JSON.stringify(config));
-        });
         document.getElementById('toggleFilterBtn').addEventListener('click', () => filterSection.classList.toggle('active'));
         historyDateFilter.addEventListener('change', renderHistory);
-        rateSlider.addEventListener('input', () => rateLabel.innerText = parseFloat(rateSlider.value).toFixed(1));
         triggerClearBtn.addEventListener('click', () => confirmModal.style.display = 'flex');
         cancelClearBtn.addEventListener('click', () => confirmModal.style.display = 'none');
         confirmClearBtn.addEventListener('click', () => {
@@ -594,12 +652,13 @@
             const today = new Date().toISOString().split('T')[0];
             historyDateFilter.value = today;
             langToggle.innerText = currentLang;
+            
             rateSlider.value = config.defRate;
-            rateLabel.innerText = config.defRate.toFixed(1);
             defRateSlider.value = config.defRate;
-            defRateVal.innerText = config.defRate.toFixed(1);
+            
             applyTheme();
             updateUIStrings();
+            updateDisplays();
         }
         init();
     </script>
