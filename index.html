@@ -282,7 +282,7 @@
             <div class="space-y-4 pt-2">
                 <div class="flex justify-between items-center px-1">
                     <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                        <span data-i18n="labelSpeed">Charge Speed</span>: <span id="rateLabel" class="text-blue-600 font-black text-sm ml-1">3.0</span> <span data-i18n="minsPerPct" class="ml-1">Mins / 1%</span>
+                        <span data-i18n="labelSpeed">Charge Speed</span>: <span id="rateLabel" class="text-blue-600 font-black text-sm ml-1">2.7</span> <span data-i18n="minsPerPct" class="ml-1">Mins / 1%</span>
                     </label>
                 </div>
                 <!-- SLIDER DENGAN TOMBOL +/- UNTUK PRESISI DESIMAL -->
@@ -380,7 +380,7 @@
                 </div>
                 <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-2xl space-y-4">
                     <div class="flex justify-between items-center">
-                        <span id="defRateVal" class="text-blue-600 dark:text-amber-400 font-bold text-sm bg-white dark:bg-slate-800 px-4 py-1 rounded-full shadow-sm">3.0</span>
+                        <span id="defRateVal" class="text-blue-600 dark:text-amber-400 font-bold text-sm bg-white dark:bg-slate-800 px-4 py-1 rounded-full shadow-sm">2.7</span>
                     </div>
                     <!-- SLIDER SETTINGS DENGAN TOMBOL +/- -->
                     <div class="flex items-center gap-3">
@@ -489,7 +489,7 @@
         let isCalculated = false;
         let currentLang = localStorage.getItem('fox350_lang') || 'ID';
         let historyData = JSON.parse(localStorage.getItem('fox350_history')) || [];
-        let config = JSON.parse(localStorage.getItem('fox350_config')) || { defRate: 3.0, darkMode: false };
+        let config = JSON.parse(localStorage.getItem('fox350_config')) || { defRate: 2.7, darkMode: false };
 
         const translations = {
             EN: { navCharging: "Dashboard", navHistory: "History", navSettings: "Settings", subtitle: "Smart Charging Estimator", labelCurrent: "Current Battery", labelTarget: "Target Battery", labelSpeed: "Charge Speed", minsPerPct: "Mins / 1%", btnStart: "Start Estimation", btnUpdate: "Update Estimation", resultTitle: "Smart Plug Timer", unitMinutes: "minutes", start: "Start", finish: "Finish", noHistory: "No history yet", chargedTo: "Charged to", filterDate: "Filter by Date", setDark: "Dark Mode", clearHistory: "Clear All", modalTitle: "Clear All History?", modalYes: "Yes, Clear", modalNo: "Cancel", setDefRate: "Default Charge Rate", setAbout: "About App", setCredits: "Credits & Development:", estLabel: "Estimated Time", totalLabel: "Total:" },
